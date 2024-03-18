@@ -10,6 +10,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import rest.test.manager.client.BadRequestException;
 import rest.test.manager.client.ProductsRestClient;
 import rest.test.manager.controller.payload.NewProductPayload;
@@ -24,8 +25,9 @@ public class ProductsController {
     private final ProductsRestClient productsRestClient;
 
     @GetMapping("list")
-    public String getProductsList(Model model){
-        model.addAttribute("products", this.productsRestClient.findAllProducts());
+    public String getProductsList(Model model, @RequestParam(name = "filter", required = false) String filter){
+        model.addAttribute("products", this.productsRestClient.findAllProducts(filter));
+        model.addAttribute("filter", filter);
         return "catalogue/products/list";
     }
 

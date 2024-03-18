@@ -13,9 +13,9 @@ import rest.test.catalogue.entity.dto.ProductDTO;
 import rest.test.catalogue.entity.util.ProductUtil;
 import rest.test.catalogue.service.ProductService;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,10 +24,12 @@ public class ProductsRestController {
     private final ProductService productService;
 
     @GetMapping
-    public List<ProductDTO> findProducts() {
-        return this.productService.findAllProducts().stream()
-                .map(ProductUtil::convertToDto)
-                .collect(Collectors.toList());
+    public Iterable<ProductDTO> findProducts(@RequestParam(value = "filter", required = false) String filter) {
+        Collection<ProductDTO> productDTOS = new ArrayList<>();
+        for (Product product : this.productService.findAllProducts(filter)) {
+            productDTOS.add(ProductUtil.convertToDto(product));
+        }
+        return productDTOS;
     }
 
     @PostMapping
