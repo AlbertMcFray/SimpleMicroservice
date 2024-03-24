@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rest.test.catalogue.entity.Product;
+import rest.test.catalogue.entity.dto.ProductDTO;
+import rest.test.catalogue.entity.util.ProductUtil;
 import rest.test.catalogue.repository.ProductRepository;
 
 import java.util.NoSuchElementException;
@@ -29,8 +31,9 @@ public class DefaultProductService implements ProductService{
     }
 
     @Override
-    public Optional<Product> findProduct(int productId) {
-        return this.productRepository.findById(productId);
+    public Optional<ProductDTO> findProduct(int productId) {
+        Optional<Product> productDTO = productRepository.findById(productId);
+        return productDTO.map(ProductUtil::convertToDto);
     }
 
     @Override

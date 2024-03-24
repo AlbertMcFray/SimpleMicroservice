@@ -26,7 +26,8 @@ public class ProductRestController {
 
     @ModelAttribute("product")
     public ProductDTO getProduct(@PathVariable("productId") int productId){
-       return this.productService.findProduct(productId).map(ProductUtil::convertToDto).orElseThrow(() -> new NoSuchElementException("catalogue.errors.product.not_found"));
+       return this.productService.findProduct(productId)
+               .orElseThrow(() -> new NoSuchElementException("catalogue.errors.product.not_found"));
     }
 
     @GetMapping

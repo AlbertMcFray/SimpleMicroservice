@@ -8,8 +8,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import rest.test.manager.entity.Product;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
 @WireMockTest(httpPort = 54321)
@@ -27,8 +30,9 @@ public class ProductsControllerIT {
     MockMvc mockMvc;
 
     @Test
+    @Sql("/sql/products.sql")
     void getProductList_ReturnsProductListPage() throws Exception{
-        var requestBuilder = MockMvcRequestBuilders.get("catalogue/products/list")
+        var requestBuilder = MockMvcRequestBuilders.get("/catalogue/products/list")
                 .queryParam("filter", "product")
                 .with(user("manager").roles("MANAGER"));
 
@@ -58,7 +62,7 @@ public class ProductsControllerIT {
     @Test
     void getNewProductPage_ReturnProductPage() throws Exception{
         //given
-        var requestBuilder = MockMvcRequestBuilders.get("catalogue/products/create")
+        var requestBuilder = MockMvcRequestBuilders.get("/catalogue/products/create")
                 .with(user("manager").roles("MANAGER"));
 
         //when

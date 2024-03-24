@@ -2,6 +2,7 @@ package rest.test.manager.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,26 +24,38 @@ public class SecurityBeans {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests.anyRequest().authenticated())
+                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                        .requestMatchers(HttpMethod.GET, "/")
+                        .hasAnyRole("MANAGER", "CUSTOMER")
+                        .requestMatchers(HttpMethod.GET, "/catalogue/products/**")
+                        .hasAnyRole("MANAGER", "CUSTOMER")
+                        .requestMatchers(HttpMethod.POST, "/catalogue/products", "/catalogue/products/**")
+                        .hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.PATCH, "/catalogue/products/{productId:\\d}")
+                        .hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/catalogue/products/{productId:\\d}")
+                        .hasRole("MANAGER")
+                        .anyRequest().denyAll())
                 .oauth2Login(Customizer.withDefaults())
                 .oauth2Client(Customizer.withDefaults())
                 .build();
     }
 
     @Bean
-    public OAuth2UserService<OidcUserRequest, OidcUser> oAuth2UserService(){
+    public OAuth2UserService<OidcUserRequest, OidcUser> oAuth2UserService() {
         OidcUserService oidcUserService = new OidcUserService();
         return userRequest -> {
             OidcUser oidcUser = oidcUserService.loadUser(userRequest);
             List<GrantedAuthority> authorities =
                     Stream.concat(oidcUser.getAuthorities().stream(),
-                    Optional.ofNullable(oidcUser.getClaimAsStringList("groups"))
-                            .orElseGet(List::of)
-                            .stream()
-                            .filter(role -> role.startsWith("ROLE_"))
-                            .map(SimpleGrantedAuthority::new)
-                            .map(GrantedAuthority.class::cast))
+                                    Optional.ofNullable(oidcUser.getClaimAsStringList("groups"))
+                                            .orElseGet(List::of)
+                                            .stream()
+                                            .filter(role -> role.startsWith("ROLE_"))
+                                            .map(SimpleGrantedAuthority::new)
+                                            .map(GrantedAuthority.class::cast))
                             .toList();
+
             return new DefaultOidcUser(authorities, oidcUser.getIdToken(), oidcUser.getUserInfo());
         };
     }
