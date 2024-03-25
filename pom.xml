@@ -13,6 +13,7 @@
     <modules>
         <module>manager-app</module>
         <module>catalogue-service</module>
+        <module>customer-app</module>
     </modules>
 
     <properties>
