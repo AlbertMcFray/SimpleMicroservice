@@ -1,8 +1,8 @@
-package rest.test.customer.service;
+package rest.test.feedback.service;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import rest.test.customer.entity.ProductReview;
+import rest.test.feedback.entity.ProductReview;
 
 public interface ProductReviewsService {
 

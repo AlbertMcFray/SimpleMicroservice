@@ -1,8 +1,8 @@
-package rest.test.customer.repository;
+package rest.test.feedback.repository;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import rest.test.customer.entity.FavouriteProduct;
+import rest.test.feedback.entity.FavouriteProduct;
 
 public interface FavouriteProductRepository {
     Mono<FavouriteProduct> save(FavouriteProduct favoriteProduct);

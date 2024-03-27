@@ -1,9 +1,8 @@
-package rest.test.customer.service;
+package rest.test.feedback.service;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import rest.test.customer.entity.FavouriteProduct;
-import rest.test.customer.entity.FavouriteProduct;
+import rest.test.feedback.entity.FavouriteProduct;
 
 public interface FavouriteProductsService {
     Mono<FavouriteProduct> addProductToFavorites(int productId);

@@ -1,11 +1,11 @@
-package rest.test.customer.service;
+package rest.test.feedback.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import rest.test.customer.entity.FavouriteProduct;
-import rest.test.customer.repository.FavouriteProductRepository;
+import rest.test.feedback.entity.FavouriteProduct;
+import rest.test.feedback.repository.FavouriteProductRepository;
 
 import java.util.UUID;
 

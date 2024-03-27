@@ -1,9 +1,9 @@
-package rest.test.customer.repository;
+package rest.test.feedback.repository;
 
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import rest.test.customer.entity.ProductReview;
+import rest.test.feedback.entity.ProductReview;
 
 import java.util.Collections;
 import java.util.LinkedList;
