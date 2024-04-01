@@ -12,14 +12,17 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class DefaultProductReviewsService implements ProductReviewsService {
-    private final ProductReviewRepository productReviewsRepository;
+
+    private final ProductReviewRepository productReviewRepository;
+
     @Override
-    public Mono<ProductReview> createProductReview(int productId, int rating, String review) {
-        return this.productReviewsRepository.save(new ProductReview(UUID.randomUUID(), productId, rating, review));
+    public Mono<ProductReview> createProductReview(int productId, int rating, String review, String userId) {
+        return this.productReviewRepository.save(
+                new ProductReview(UUID.randomUUID(), productId, rating, review, userId));
     }
 
     @Override
     public Flux<ProductReview> findProductReviewsByProduct(int productId) {
-        return this.productReviewsRepository.findAllByProductId(productId);
+        return this.productReviewRepository.findAllByProductId(productId);
     }
 }

@@ -14,38 +14,47 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class WebClientFavouriteProductsClient implements FavouriteProductsClient {
+
     private final WebClient webClient;
+
     @Override
     public Flux<FavouriteProduct> findFavouriteProducts() {
-        return webClient.get().uri("/feedback-api/favourite-products")
+        return this.webClient
+                .get()
+                .uri("/feedback-api/favourite-products")
                 .retrieve()
                 .bodyToFlux(FavouriteProduct.class);
     }
 
     @Override
     public Mono<FavouriteProduct> findFavouriteProductByProductId(int productId) {
-        return webClient.get().uri("/feedback-api/favourite-products/by-product-id/{productId}")
+        return this.webClient
+                .get()
+                .uri("/feedback-api/favourite-products/by-product-id/{productId}", productId)
                 .retrieve()
                 .bodyToMono(FavouriteProduct.class)
                 .onErrorComplete(WebClientResponseException.NotFound.class);
     }
 
     @Override
-    public Mono<FavouriteProduct> addProductToFavorites(int productId) {
-        return this.webClient.post().uri("/feedback-api/favourite-products")
+    public Mono<FavouriteProduct> addProductToFavourites(int productId) {
+        return this.webClient
+                .post()
+                .uri("/feedback-api/favourite-products")
                 .bodyValue(new NewFavouriteProductPayload(productId))
                 .retrieve()
                 .bodyToMono(FavouriteProduct.class)
                 .onErrorMap(WebClientResponseException.BadRequest.class,
-                        exception -> new ClientBadRequestException(
-                                exception,
-                                ((List<String>)exception.getResponseBodyAs(ProblemDetail.class)
-                                        .getProperties().get("errors")) ));
+                        exception -> new ClientBadRequestException(exception,
+                                ((List<String>) exception.getResponseBodyAs(ProblemDetail.class)
+                                        .getProperties().get("errors"))));
     }
 
     @Override
-    public Mono<Void> removeProductFromFavorites(int productId) {
-        return webClient.delete().uri("/feedback-api/favourite-products/by-product-id/{productId}", productId)
+    public Mono<Void> removeProductFromFavourites(int productId) {
+        return this.webClient
+                .delete()
+                .uri("/feedback-api/favourite-products/by-product-id/{productId}", productId)
                 .retrieve()
                 .toBodilessEntity()
                 .then();

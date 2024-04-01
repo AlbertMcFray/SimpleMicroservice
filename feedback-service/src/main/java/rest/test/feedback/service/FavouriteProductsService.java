@@ -4,12 +4,14 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import rest.test.feedback.entity.FavouriteProduct;
 
+
 public interface FavouriteProductsService {
-    Mono<FavouriteProduct> addProductToFavorites(int productId);
 
-    Mono<Void> removeProductFromFavorites(int productId);
+    Mono<FavouriteProduct> addProductToFavourites(int productId, String userId);
 
-    Mono<FavouriteProduct> findFavouriteProductByProduct(int productId);
+    Mono<Void> removeProductFromFavourites(int productId, String userId);
 
-    Flux<FavouriteProduct> findFavouriteProducts();
+    Mono<FavouriteProduct> findFavouriteProductByProduct(int productId, String userId);
+
+    Flux<FavouriteProduct> findFavouriteProducts(String userId);
 }

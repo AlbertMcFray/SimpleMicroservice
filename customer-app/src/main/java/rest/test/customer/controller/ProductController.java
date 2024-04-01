@@ -2,38 +2,39 @@ package rest.test.customer.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.web.reactive.result.view.CsrfRequestDataValueProcessor;
+import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import rest.test.customer.client.FavouriteProductsClient;
 import rest.test.customer.client.ProductReviewsClient;
 import rest.test.customer.client.ProductsClient;
 import rest.test.customer.client.exception.ClientBadRequestException;
-import rest.test.customer.controller.payload.NewProductReviewPayload;
+import rest.test.customer.client.payload.NewProductReviewPayload;
 import rest.test.customer.entity.Product;
 
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
-
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("customer/products/{productId:\\d+}")
 @Slf4j
 public class ProductController {
+
     private final ProductsClient productsClient;
+
     private final FavouriteProductsClient favouriteProductsClient;
+
     private final ProductReviewsClient productReviewsClient;
 
     @ModelAttribute(name = "product", binding = false)
     public Mono<Product> loadProduct(@PathVariable("productId") int id) {
         return this.productsClient.findProduct(id)
-                .switchIfEmpty(Mono.error(new NoSuchElementException("{customer.products.error.not_found}")));
+                .switchIfEmpty(Mono.error(new NoSuchElementException("customer.products.error.not_found")));
     }
-
 
     @GetMapping
     public Mono<String> getProductPage(@PathVariable("productId") int id, Model model) {
@@ -50,7 +51,7 @@ public class ProductController {
     public Mono<String> addProductToFavourites(@ModelAttribute("product") Mono<Product> productMono) {
         return productMono
                 .map(Product::id)
-                .flatMap(productId -> this.favouriteProductsClient.addProductToFavorites(productId)
+                .flatMap(productId -> this.favouriteProductsClient.addProductToFavourites(productId)
                         .thenReturn("redirect:/customer/products/%d".formatted(productId))
                         .onErrorResume(exception -> {
                             log.error(exception.getMessage(), exception);
@@ -58,34 +59,40 @@ public class ProductController {
                         }));
     }
 
-    @PostMapping("delete-from-favourites")
-    public Mono<String> deleteProductFromFavourites(@ModelAttribute("product") Mono<Product> productMono) {
+    @PostMapping("remove-from-favourites")
+    public Mono<String> removeProductFromFavourites(@ModelAttribute("product") Mono<Product> productMono) {
         return productMono
                 .map(Product::id)
-                .flatMap(productId -> this.favouriteProductsClient.removeProductFromFavorites(productId)
+                .flatMap(productId -> this.favouriteProductsClient.removeProductFromFavourites(productId)
                         .thenReturn("redirect:/customer/products/%d".formatted(productId)));
     }
 
     @PostMapping("create-review")
-    public Mono<String> createReview(
-            @PathVariable("productId") int id,
-            NewProductReviewPayload payload,
-            Model model){
-            return this.productReviewsClient.createProductReview(id, payload.rating(), payload.review())
-                    .thenReturn("redirect:/customer/products/%d".formatted(id))
-                    .onErrorResume(ClientBadRequestException.class, exception -> {
-                        model.addAttribute("inFavourite", false);
-                        model.addAttribute("payload", payload);
-                        model.addAttribute("errors", exception.getErrors());
-                        return this.favouriteProductsClient.findFavouriteProductByProductId(id)
-                                .doOnNext(favouriteProduct -> model.addAttribute("inFavourite", true))
-                                .thenReturn("customer/products/product");
-                    });
+    public Mono<String> createReview(@PathVariable("productId") int id,
+                                     NewProductReviewPayload payload,
+                                     Model model) {
+        return this.productReviewsClient.createProductReview(id, payload.rating(), payload.review())
+                .thenReturn("redirect:/customer/products/%d".formatted(id))
+                .onErrorResume(ClientBadRequestException.class, exception -> {
+                    model.addAttribute("inFavourite", false);
+                    model.addAttribute("payload", payload);
+                    model.addAttribute("errors", exception.getErrors());
+                    return this.favouriteProductsClient.findFavouriteProductByProductId(id)
+                            .doOnNext(favouriteProduct -> model.addAttribute("inFavourite", true))
+                            .thenReturn("customer/products/product");
+                });
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public String handleNoSuchElementException(NoSuchElementException exception, Model model){
+    public String handleNoSuchElementException(NoSuchElementException exception, Model model) {
         model.addAttribute("error", exception.getMessage());
         return "errors/404";
+    }
+
+    @ModelAttribute
+    public Mono<CsrfToken> loadCsrfToken(ServerWebExchange exchange) {
+        return exchange.<Mono<CsrfToken>>getAttribute(CsrfToken.class.getName())
+                .doOnSuccess(token -> exchange.getAttributes()
+                        .put(CsrfRequestDataValueProcessor.DEFAULT_CSRF_ATTR_NAME, token));
     }
 }

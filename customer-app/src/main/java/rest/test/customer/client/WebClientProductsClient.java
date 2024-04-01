@@ -13,14 +13,16 @@ public class WebClientProductsClient implements ProductsClient{
     private final WebClient webClient;
     @Override
     public Flux<Product> findAllProducts(String filter) {
-        return this.webClient.get().uri("/catalogue-api/products?filter={filter}", filter)
+        return this.webClient.get()
+                .uri("/catalogue-api/products?filter={filter}", filter)
                 .retrieve()
                 .bodyToFlux(Product.class);
     }
 
     @Override
     public Mono<Product> findProduct(int id) {
-        return this.webClient.get().uri("/catalogue-api/products/{productId}")
+        return this.webClient.get()
+                .uri("/catalogue-api/products/{productId}", id)
                 .retrieve()
                 .bodyToMono(Product.class)
                 .onErrorComplete(WebClientResponseException.NotFound.class);

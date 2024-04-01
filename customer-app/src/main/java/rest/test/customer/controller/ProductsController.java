@@ -21,9 +21,8 @@ public class ProductsController {
     private final FavouriteProductsClient favouriteProductsClient;
 
     @GetMapping("list")
-    public Mono<String> getProductsListPage(
-            Model model,
-            @RequestParam(name = "filter", required = false) String filter) {
+    public Mono<String> getProductsListPage(Model model,
+                                            @RequestParam(name = "filter", required = false) String filter) {
         model.addAttribute("filter", filter);
         return this.productsClient.findAllProducts(filter)
                 .collectList()
@@ -32,9 +31,8 @@ public class ProductsController {
     }
 
     @GetMapping("favourites")
-    public Mono<String> getFavouriteProductsPage(
-            Model model,
-            @RequestParam(name = "filter", required = false) String filter) {
+    public Mono<String> getFavouriteProductsPage(Model model,
+                                                 @RequestParam(name = "filter", required = false) String filter) {
         model.addAttribute("filter", filter);
         return this.favouriteProductsClient.findFavouriteProducts()
                 .map(FavouriteProduct::productId)
