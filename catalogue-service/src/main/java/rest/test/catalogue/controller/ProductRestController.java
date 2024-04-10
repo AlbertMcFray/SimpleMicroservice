@@ -40,8 +40,8 @@ public class ProductRestController {
             @PathVariable("productId") int productId,
             @Valid @RequestBody UpdateProductPayload payload,
             BindingResult bindingResult) throws BindException {
-        if(bindingResult.hasErrors()){
-            if(bindingResult instanceof BindException exception){
+        if (bindingResult.hasErrors()) {
+            if (bindingResult instanceof BindException exception) {
                 throw exception;
             } else {
                 throw new BindException(bindingResult);
