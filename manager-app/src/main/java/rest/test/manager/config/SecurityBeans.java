@@ -1,10 +1,13 @@
 package rest.test.manager.config;
 
+import jakarta.annotation.Priority;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
@@ -22,20 +25,24 @@ import java.util.stream.Stream;
 public class SecurityBeans {
 
     @Bean
+    @Priority(0)
+    public SecurityFilterChain metricsSecurityFilterChain(HttpSecurity http) throws Exception{
+        return http
+                .securityMatcher("/actuator/**")
+                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                        .requestMatchers("/actuator/**").hasAuthority("SCOPE_metrics")
+                        .anyRequest().denyAll())
+                .oauth2ResourceServer(customizer -> customizer.jwt(Customizer.withDefaults()))
+                .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .build();
+    }
+
+    @Bean
+    @Priority(1)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers(HttpMethod.GET, "/")
-                        .hasAnyRole("MANAGER", "CUSTOMER")
-                        .requestMatchers(HttpMethod.GET, "/catalogue/products/**")
-                        .hasAnyRole("MANAGER", "CUSTOMER")
-                        .requestMatchers(HttpMethod.POST, "/catalogue/products", "/catalogue/products/**")
-                        .hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.PATCH, "/catalogue/products/{productId:\\d}")
-                        .hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.DELETE, "/catalogue/products/{productId:\\d}")
-                        .hasRole("MANAGER")
-                        .anyRequest().denyAll())
+                        .anyRequest().hasAuthority("MANAGER"))
                 .oauth2Login(Customizer.withDefaults())
                 .oauth2Client(Customizer.withDefaults())
                 .build();
