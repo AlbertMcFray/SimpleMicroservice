@@ -3,14 +3,22 @@ package rest.test.feedback.controller;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import rest.test.feedback.entity.ProductReview;
+
+import static org.springframework.restdocs.headers.HeaderDocumentation.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +27,8 @@ import static org.springframework.security.test.web.reactive.server.SecurityMock
 
 @SpringBootTest
 @AutoConfigureWebTestClient
+@AutoConfigureRestDocs
+@ExtendWith(RestDocumentationExtension.class)
 public class ProductReviewsRestControllerIT {
 
     @Autowired
@@ -91,6 +101,7 @@ public class ProductReviewsRestControllerIT {
                         }""")
                 // then
                 .exchange()
+                .expectStatus().isCreated()
                 .expectHeader().exists(HttpHeaders.LOCATION)
                 .expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
                 .expectBody()
@@ -98,8 +109,26 @@ public class ProductReviewsRestControllerIT {
                         {
                             "productId": 1,
                             "rating": 3,
-                            "review": "Three!"
-                        }""").jsonPath("$.id").exists();
+                            "review": "Three!",
+                            "userId": "user-tester"
+                        }""").jsonPath("$.id").exists()
+                .consumeWith(document("product_reviews/create_product_review",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("productId").type("int").description("Product ID"),
+                                fieldWithPath("rating").type("int").description("Product rating"),
+                                fieldWithPath("review").type("string").description("Product review")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").type("int").description("Review Id"),
+                                fieldWithPath("productId").type("int").description("Product ID"),
+                                fieldWithPath("rating").type("int").description("Product rating"),
+                                fieldWithPath("review").type("string").description("Product review"),
+                                fieldWithPath("userId").type("int").description("User ID")
+                        ),
+                        responseHeaders(headerWithName(HttpHeaders.LOCATION)
+                                .description("Link to created product review"))));
     }
 
     @Test

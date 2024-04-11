@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import rest.test.catalogue.entity.Product;
-import rest.test.catalogue.entity.dto.ProductDTO;
 import rest.test.catalogue.entity.util.ProductUtil;
 import rest.test.catalogue.repository.ProductRepository;
 
