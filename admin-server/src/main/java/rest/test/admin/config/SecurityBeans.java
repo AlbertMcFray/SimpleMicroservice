@@ -4,8 +4,10 @@ import jakarta.annotation.Priority;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -19,13 +21,13 @@ import java.util.Optional;
 public class SecurityBeans {
 
     @Bean
-    OAuthHttpHeadersProvider oAuthHttpHeadersProvider(
+    public OAuthHttpHeadersProvider oAuthHttpHeadersProvider(
             ClientRegistrationRepository clientRegistrationRepository,
-            OAuth2AuthorizedClientService oAuth2AuthorizedClientService
-    ){
+            OAuth2AuthorizedClientService authorizedClientService
+    ) {
         return new OAuthHttpHeadersProvider(
-             new AuthorizedClientServiceOAuth2AuthorizedClientManager(
-                     clientRegistrationRepository, oAuth2AuthorizedClientService)
+                new AuthorizedClientServiceOAuth2AuthorizedClientManager(
+                        clientRegistrationRepository, authorizedClientService)
         );
     }
 
@@ -33,18 +35,23 @@ public class SecurityBeans {
     @Priority(0)
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher(request -> Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION))
-                        .map(header -> header.startsWith("Bearer ")).orElse(false))
+                .securityMatchers(customizer -> customizer
+                        .requestMatchers(HttpMethod.POST, "/instances")
+                        .requestMatchers(HttpMethod.DELETE, "/instances/*")
+                        .requestMatchers("/actuator/**"))
                 .oauth2ResourceServer(customizer -> customizer.jwt(Customizer.withDefaults()))
-                .authorizeHttpRequests(customizer -> customizer.anyRequest().hasAuthority("SCOPE_metrics_server"))
+                .authorizeHttpRequests(customizer -> customizer.requestMatchers("/instances", "/instances/*")
+                        .hasAuthority("SCOPE_metrics_server")
+                        .requestMatchers("/actuator/**").permitAll()  //hasAuthority("SCOPE_metrics")
+                        .anyRequest().denyAll())
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .csrf(csfr ->csfr.disable())
+                .csrf(CsrfConfigurer::disable)
                 .build();
     }
 
     @Bean
     @Priority(1)
-    public SecurityFilterChain uiSecurityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain uiSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .oauth2Client(Customizer.withDefaults())
                 .oauth2Login(Customizer.withDefaults())
