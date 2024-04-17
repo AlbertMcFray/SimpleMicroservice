@@ -1,0 +1,62 @@
+resttest:
+  services:
+    catalogue:
+      uri: lb://resttest-catalogue-service
+    feedback:
+      uri: lb://resttest-feedback-service
+server:
+  port: 8083
+spring:
+  application:
+    name: resttest-customer-app
+  boot:
+    admin:
+      client:
+        enabled: false
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8082/realms/resttest
+            user-name-attribute: preferred_username
+        registration:
+          keycloak:
+            client-id: customer-app
+            client-secret: PbIurjWfNuz9Jd3NXYqfpjFYRQRNnsUG
+            scope:
+              - openid
+              - view_catalogue
+          metrics:
+            provider: keycloak
+            client-id: customer-app
+            client-secret: PbIurjWfNuz9Jd3NXYqfpjFYRQRNnsUG
+            authorization-grant-type: client_credentials
+            scope:
+              - metrics_server
+          discovery:
+            provider: keycloak
+            client-id: customer-app
+            client-secret: PbIurjWfNuz9Jd3NXYqfpjFYRQRNnsUG
+            authorization-grant-type: client_credentials
+            scope:
+              - discovery
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8082/realms/resttest
+management:
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

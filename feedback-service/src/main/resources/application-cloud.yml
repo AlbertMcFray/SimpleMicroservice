@@ -1,0 +1,58 @@
+server:
+  port: 8084
+spring:
+  application:
+    name: resttest-feedback-service
+  boot:
+    admin:
+      client:
+        enabled: false
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/feedback-db
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8082/realms/resttest
+      client:
+        registration:
+          keycloak:
+            client-id: feedback-service-metrics-client
+            client-secret: UaMUuPmrzW3yZPya2cWBm8PM8ZK8D7f9
+            authorization-grant-type: client_credentials
+            scope:
+              - metrics_server
+          discovery:
+            provider: keycloak
+            client-id: feedback-service-metrics-client
+            client-secret: UaMUuPmrzW3yZPya2cWBm8PM8ZK8D7f9
+            authorization-grant-type: client_credentials
+            scope:
+              - discovery
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8082/realms/resttest
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: feedback-service-swagger-ui
+      use-pkce-with-authorization-code-grant: true
+keycloak:
+  uri: http://localhost:8082
+management:
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true

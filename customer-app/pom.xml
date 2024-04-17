@@ -65,6 +65,10 @@
             <artifactId>spring-boot-admin-starter-client</artifactId>
             <version>3.2.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

@@ -4,6 +4,8 @@ resttest:
       uri: http://localhost:8081
       registration-id: keycloak
 spring:
+  application:
+    name: resttest-manager-app
   boot:
     admin:
       client:
@@ -34,8 +36,8 @@ spring:
               - microprofile-jwt
           metrics:
             provider: keycloak
-            client-id: manager-app-metrics-client
-            client-secret: wxgIeF2aCy3tx3GYtmE4zEcVw5BFT2GZ
+            client-id: manager-app
+            client-secret: S62KQWrnKLdDNZZF7eawo7uPYRiaa66m
             authorization-grant-type: client_credentials
             scope:
               - metrics_server

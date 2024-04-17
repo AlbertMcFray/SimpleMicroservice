@@ -1,0 +1,68 @@
+spring:
+  application:
+    name: resttest-catalogue-service
+  boot:
+    admin:
+      client:
+        enabled: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/catalogue
+    username: postgres
+    password: root
+  flyway:
+    schemas:
+      - public
+      - catalogue
+  jpa:
+    show-sql: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8082/realms/resttest
+      client:
+        registration:
+          keycloak:
+            client-id: catalogue-service
+            client-secret: UD4Hxsyd6gQ2I9OmZABgN9BXIHSdfEwp
+            authorization-grant-type: client_credentials
+            scope:
+              - metrics_server
+          discovery:
+            provider: keycloak
+            client-id: catalogue-service
+            client-secret: UD4Hxsyd6gQ2I9OmZABgN9BXIHSdfEwp
+            authorization-grant-type: client_credentials
+            scope:
+              - discovery
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8082/realms/resttest
+server:
+  port: 8081
+logging:
+  level:
+    sql: info
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: catalogue-service-swagger-ui
+      use-pkce-with-authorization-code-grant: true
+keycloak:
+  uri: http://localhost:8082
+management:
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true

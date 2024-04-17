@@ -1,6 +1,8 @@
 server:
   port: 8084
 spring:
+  application:
+    name: resttest-feedback-service
   boot:
     admin:
       client:
@@ -25,6 +27,13 @@ spring:
             authorization-grant-type: client_credentials
             scope:
               - metrics_server
+          discovery:
+            provider: keycloak
+            client-id: feedback-service-metrics-client
+            client-secret: UaMUuPmrzW3yZPya2cWBm8PM8ZK8D7f9
+            authorization-grant-type: client_credentials
+            scope:
+              - discovery
         provider:
           keycloak:
             issuer-uri: http://localhost:8082/realms/resttest
@@ -45,3 +54,9 @@ management:
       web:
         exposure:
           include: "*"
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true

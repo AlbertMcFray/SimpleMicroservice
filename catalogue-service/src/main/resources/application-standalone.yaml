@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: resttest-catalogue-service
   boot:
     admin:
       client:
@@ -25,11 +27,18 @@ spring:
       client:
         registration:
           keycloak:
-            client-id: catalogue-service-metrics-client
+            client-id: catalogue-service
             client-secret: UD4Hxsyd6gQ2I9OmZABgN9BXIHSdfEwp
             authorization-grant-type: client_credentials
             scope:
               - metrics_server
+          discovery:
+            provider: keycloak
+            client-id: catalogue-service
+            client-secret: UD4Hxsyd6gQ2I9OmZABgN9BXIHSdfEwp
+            authorization-grant-type: client_credentials
+            scope:
+              - discovery
         provider:
           keycloak:
             issuer-uri: http://localhost:8082/realms/resttest
@@ -55,3 +64,9 @@ management:
     web:
       exposure:
         include: "*"
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true

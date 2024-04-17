@@ -7,6 +7,8 @@ resttest:
 server:
   port: 8083
 spring:
+  application:
+    name: resttest-customer-app
   boot:
     admin:
       client:
@@ -31,8 +33,8 @@ spring:
               - view_catalogue
           metrics:
             provider: keycloak
-            client-id: customer-app-metrics-client
-            client-secret: GoOhqjHRUqYBTQmmnbkL0jyjW0GtdHFt
+            client-id: customer-app
+            client-secret: PbIurjWfNuz9Jd3NXYqfpjFYRQRNnsUG
             authorization-grant-type: client_credentials
             scope:
               - metrics_server
