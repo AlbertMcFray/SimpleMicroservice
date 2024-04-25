@@ -14,7 +14,7 @@ public class SecurityBeans {
 
     @Bean
     @Priority(0)
-    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .securityMatcher("/eureka/apps", "/eureka/apps/**")
                 .authorizeHttpRequests(customizer -> customizer.anyRequest()
@@ -27,7 +27,7 @@ public class SecurityBeans {
 
     @Bean
     @Priority(1)
-    public SecurityFilterChain mainSecurityFilterChain(HttpSecurity http)throws Exception{
+    public SecurityFilterChain mainSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(customizer -> customizer.anyRequest().authenticated())
                 .oauth2Login(Customizer.withDefaults())

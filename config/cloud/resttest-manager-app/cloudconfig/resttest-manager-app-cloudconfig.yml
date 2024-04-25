@@ -1,19 +1,13 @@
 resttest:
   services:
     catalogue:
-      uri: http://localhost:8081
+      uri: lb://resttest-catalogue-service
       registration-id: keycloak
 spring:
-  application:
-    name: resttest-manager-app
   boot:
     admin:
       client:
-        url: http://localhost:8085
-        instance:
-          name: manager-app
-          service-host-type: ip
-        enabled: true
+        enabled: false
   cloud:
     config:
       enabled: false
@@ -25,9 +19,9 @@ spring:
     oauth2:
       client:
         provider:
-         keycloak:
-           issuer-uri: http://localhost:8082/realms/resttest
-           user-name-attribute: preferred_username
+          keycloak:
+            issuer-uri: http://localhost:8082/realms/resttest
+            user-name-attribute: preferred_username
         registration:
           keycloak:
             client-id: manager-app
@@ -44,6 +38,13 @@ spring:
             authorization-grant-type: client_credentials
             scope:
               - metrics_server
+          discovery:
+            provider: keycloak
+            client-id: manager-app
+            client-secret: S62KQWrnKLdDNZZF7eawo7uPYRiaa66m
+            authorization-grant-type: client_credentials
+            scope:
+              - discovery
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8082/realms/resttest
@@ -57,3 +58,9 @@ management:
     web:
       exposure:
         include: '*'
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true

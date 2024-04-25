@@ -1,22 +1,18 @@
-server:
-  port: 8084
 spring:
-  application:
-    name: resttest-feedback-service
   boot:
     admin:
       client:
-        url: http://localhost:8085
-        instance:
-          name: feedback-service
-          service-host-type: ip
-        enabled: true
-  cloud:
-    config:
-      enabled: false
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/feedback-db
+        enabled: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/catalogue
+    username: postgres
+    password: root
+  flyway:
+    schemas:
+      - public
+      - catalogue
+  jpa:
+    show-sql: true
   security:
     oauth2:
       resourceserver:
@@ -25,38 +21,41 @@ spring:
       client:
         registration:
           keycloak:
-            client-id: feedback-service-metrics-client
-            client-secret: UaMUuPmrzW3yZPya2cWBm8PM8ZK8D7f9
+            client-id: catalogue-service
+            client-secret: UD4Hxsyd6gQ2I9OmZABgN9BXIHSdfEwp
             authorization-grant-type: client_credentials
             scope:
               - metrics_server
           discovery:
             provider: keycloak
-            client-id: feedback-service-metrics-client
-            client-secret: UaMUuPmrzW3yZPya2cWBm8PM8ZK8D7f9
+            client-id: catalogue-service
+            client-secret: UD4Hxsyd6gQ2I9OmZABgN9BXIHSdfEwp
             authorization-grant-type: client_credentials
             scope:
               - discovery
         provider:
           keycloak:
             issuer-uri: http://localhost:8082/realms/resttest
+logging:
+  level:
+    sql: info
 springdoc:
   swagger-ui:
     oauth:
-      client-id: feedback-service-swagger-ui
+      client-id: catalogue-service-swagger-ui
       use-pkce-with-authorization-code-grant: true
 keycloak:
   uri: http://localhost:8082
 management:
-    health:
-      livenessstate:
-        enabled: true
-      readinessstate:
-        enabled: true
-    endpoints:
-      web:
-        exposure:
-          include: "*"
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 eureka:
   client:
     service-url:

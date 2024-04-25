@@ -1,19 +1,8 @@
-server:
-  port: 8084
 spring:
-  application:
-    name: resttest-feedback-service
   boot:
     admin:
       client:
-        url: http://localhost:8085
-        instance:
-          name: feedback-service
-          service-host-type: ip
-        enabled: true
-  cloud:
-    config:
-      enabled: false
+        enabled: false
   data:
     mongodb:
       uri: mongodb://localhost:27017/feedback-db
@@ -48,15 +37,15 @@ springdoc:
 keycloak:
   uri: http://localhost:8082
 management:
-    health:
-      livenessstate:
-        enabled: true
-      readinessstate:
-        enabled: true
-    endpoints:
-      web:
-        exposure:
-          include: "*"
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 eureka:
   client:
     service-url:

@@ -1,9 +1,4 @@
-server:
-  port: 8085
 spring:
-  cloud:
-    config:
-      enabled: false
   security:
     oauth2:
       resourceserver:
@@ -13,6 +8,7 @@ spring:
         provider:
           keycloak:
             issuer-uri: http://localhost:8082/realms/resttest
+            user-name-attribute: preferred_username
         registration:
           keycloak:
             authorization-grant-type: client_credentials
@@ -41,3 +37,9 @@ management:
         include:
           - health
           - prometheus
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

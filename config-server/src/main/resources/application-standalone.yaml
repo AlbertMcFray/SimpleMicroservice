@@ -1,0 +1,10 @@
+server:
+  port: 8888
+spring:
+  application:
+    name: resttest-config-server
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: C:/Users/chern/IdeaProjects/Resttest/config/cloud/{application}/{profile}

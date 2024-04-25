@@ -71,30 +71,30 @@ public class ClientConfig {
 
     @Bean
     public WebClientProductsClient webClientProductsClient(
-            @Value("${selmag.services.catalogue.uri:http://localhost:8081}") String catalogueBaseUrl,
-            WebClient.Builder selmagServicesWebClientBuilder
+            @Value("${resttest.services.catalogue.uri:http://localhost:8081}") String catalogueBaseUrl,
+            WebClient.Builder resttestServicesWebClientBuilder
     ) {
-        return new WebClientProductsClient(selmagServicesWebClientBuilder
+        return new WebClientProductsClient(resttestServicesWebClientBuilder
                 .baseUrl(catalogueBaseUrl)
                 .build());
     }
 
     @Bean
     public WebClientFavouriteProductsClient webClientFavouriteProductsClient(
-            @Value("${selmag.services.feedback.uri:http://localhost:8084}") String feedbackBaseUrl,
-            WebClient.Builder selmagServicesWebClientBuilder
+            @Value("${resttest.services.feedback.uri:http://localhost:8084}") String feedbackBaseUrl,
+            WebClient.Builder resttestServicesWebClientBuilder
     ) {
-        return new WebClientFavouriteProductsClient(selmagServicesWebClientBuilder
+        return new WebClientFavouriteProductsClient(resttestServicesWebClientBuilder
                 .baseUrl(feedbackBaseUrl)
                 .build());
     }
 
     @Bean
     public WebClientProductReviewsClient webClientProductReviewsClient(
-            @Value("${selmag.services.feedback.uri:http://localhost:8084}") String feedbackBaseUrl,
-            WebClient.Builder selmagServicesWebClientBuilder
+            @Value("${resttest.services.feedback.uri:http://localhost:8084}") String feedbackBaseUrl,
+            WebClient.Builder resttestServicesWebClientBuilder
     ) {
-        return new WebClientProductReviewsClient(selmagServicesWebClientBuilder
+        return new WebClientProductReviewsClient(resttestServicesWebClientBuilder
                 .baseUrl(feedbackBaseUrl)
                 .build());
     }

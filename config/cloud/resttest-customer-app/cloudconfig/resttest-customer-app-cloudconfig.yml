@@ -4,18 +4,11 @@ resttest:
       uri: lb://resttest-catalogue-service
     feedback:
       uri: lb://resttest-feedback-service
-server:
-  port: 8083
 spring:
-  application:
-    name: resttest-customer-app
   boot:
     admin:
       client:
         enabled: false
-  cloud:
-    config:
-      enabled: false
   security:
     oauth2:
       client:

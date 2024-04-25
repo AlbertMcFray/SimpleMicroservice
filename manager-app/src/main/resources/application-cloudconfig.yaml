@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: resttest-manager-app
+  config:
+    import: 'optional:configserver:'
+  cloud:
+    config:
+      uri: http://config:password@localhost:8888
